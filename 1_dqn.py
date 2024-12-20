@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
+# if get_ipython() is not None:
+#     print("Đang chạy trong môi trường IPython/Jupyter Notebook.")
+# else:
+#     print("Không chạy trong môi trường IPython/Jupyter Notebook.")
+#
 
 # ##### Copyright 2021 The TF-Agents Authors.
 
@@ -29,12 +34,12 @@
 # In[ ]:
 
 
-get_ipython().system('sudo apt-get update')
-get_ipython().system('sudo apt-get install -y xvfb ffmpeg freeglut3-dev')
-get_ipython().system("pip install 'imageio==2.4.0'")
-get_ipython().system('pip install pyvirtualdisplay')
-get_ipython().system('pip install tf-agents[reverb]')
-get_ipython().system('pip install pyglet')
+# get_ipython().system('sudo apt-get update')
+# get_ipython().system('sudo apt-get install -y xvfb ffmpeg freeglut3-dev')
+# get_ipython().system("pip install 'imageio==2.4.0'")
+# get_ipython().system('pip install pyvirtualdisplay')
+# get_ipython().system('pip install tf-agents[reverb]')
+# get_ipython().system('pip install pyglet')
 
 
 # In[2]:
@@ -50,9 +55,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image
 import pyvirtualdisplay
-import reverb
+#import reverb
+import re
 
 import tensorflow as tf
+from IPython import get_ipython
 
 from tf_agents.agents.dqn import dqn_agent
 from tf_agents.drivers import py_driver
@@ -378,15 +385,15 @@ replay_buffer_signature = tensor_spec.from_spec(
 replay_buffer_signature = tensor_spec.add_outer_dim(
     replay_buffer_signature)
 
-table = reverb.Table(
+table = re.Table(
     table_name,
     max_size=replay_buffer_max_length,
-    sampler=reverb.selectors.Uniform(),
-    remover=reverb.selectors.Fifo(),
-    rate_limiter=reverb.rate_limiters.MinSize(1),
+    sampler=re.selectors.Uniform(),
+    remover=re.selectors.Fifo(),
+    rate_limiter=re.rate_limiters.MinSize(1),
     signature=replay_buffer_signature)
 
-reverb_server = reverb.Server([table])
+reverb_server = re.Server([table])
 
 replay_buffer = reverb_replay_buffer.ReverbReplayBuffer(
     agent.collect_data_spec,

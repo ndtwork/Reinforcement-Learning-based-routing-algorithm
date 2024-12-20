@@ -10,59 +10,6 @@ import wandb
 from wandb import config
 from tqdm import tqdm
 
-# def plot_graph(adjacency_matrix, figure_title=None, print_shortest_path=False, src_node=None, filename=None,
-#                added_edges=None, pause=False):
-#     adjacency_matrix = np.array(adjacency_matrix)
-#     rows, cols = np.where(adjacency_matrix > 0)
-#     edges = list(zip(rows.tolist(), cols.tolist()))
-#     values = [adjacency_matrix[i][j] for i, j in edges]
-#     weighted_edges = [(e[0], e[1], values[idx]) for idx, e in enumerate(edges)]
-#     plt.cla()
-#     fig = plt.figure(1)
-#     if figure_title is None:
-#         plt.title("The shortest path for every node to the target")
-#     else:
-#         plt.title(figure_title)
-#     G = nx.Graph()
-#     G.add_weighted_edges_from(weighted_edges)
-#     # plot
-#     labels = nx.get_edge_attributes(G, 'weight')
-#     pos = nx.kamada_kawai_layout(G)
-#     # set with_labels to False if use node labels
-#     nx.draw(G, pos=pos, with_labels=True, font_size=15)
-#     nodes = nx.draw_networkx_nodes(G, pos, node_color="y")
-#     nodes.set_edgecolor('black')
-#     nodes = nx.draw_networkx_nodes(
-#         G, pos, nodelist=[0, src_node] if src_node else [0], node_color="g")
-#     nodes.set_edgecolor('black')
-#     nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=labels, font_size=15)
-#     if print_shortest_path:
-#         print("The shortest path (dijkstra) is showed below: ")
-#         added_edges = []
-#         for node in range(1, num_nodes):
-#             shortest_path = nx.dijkstra_path(G, node, 0)  # [1,0]
-#             print("{}: {}".format("->".join([str(v) for v in shortest_path]),
-#                                   nx.dijkstra_path_length(G, node, 0)))
-#             added_edges += list(zip(shortest_path, shortest_path[1:]))
-#     if added_edges is not None:
-#         nx.draw_networkx_edges(
-#             G, pos, edgelist=added_edges, edge_color='r', width=2)
-#
-#     if filename is not None:
-#         plt.savefig(filename)
-#
-#     if pause:
-#         plt.pause(0.3)
-#     else:
-#         plt.show()
-#
-#     # return img for video generation
-#     img = None
-#     img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-#     w, h = fig.canvas.get_width_height()
-#     img = img.reshape((h, w, 3))
-#     return img
-
 def plot_graph(adjacency_matrix, figure_title=None, print_shortest_path=False, src_node=None, filename=None,
                added_edges=None, pause=False):
     adjacency_matrix = np.array(adjacency_matrix)
@@ -70,67 +17,120 @@ def plot_graph(adjacency_matrix, figure_title=None, print_shortest_path=False, s
     edges = list(zip(rows.tolist(), cols.tolist()))
     values = [adjacency_matrix[i][j] for i, j in edges]
     weighted_edges = [(e[0], e[1], values[idx]) for idx, e in enumerate(edges)]
-
     plt.cla()
-
-    # Create a new figure and axis object
-    fig, ax = plt.subplots(figsize=(8, 6))  # You can adjust the figure size if needed
-
-    # Title setup
+    fig = plt.figure(1)
     if figure_title is None:
-        ax.set_title("The shortest path for every node to the target")
+        plt.title("The shortest path for every node to the target")
     else:
-        ax.set_title(figure_title)
-
-    # Create graph
+        plt.title(figure_title)
     G = nx.Graph()
     G.add_weighted_edges_from(weighted_edges)
-
-    # Plot the graph
+    # plot
     labels = nx.get_edge_attributes(G, 'weight')
     pos = nx.kamada_kawai_layout(G)
-
-    # Draw nodes and edges
-    nx.draw(G, pos=pos, ax=ax, with_labels=True, font_size=15)
-    nodes = nx.draw_networkx_nodes(G, pos, ax=ax, node_color="y", edgecolors='black')
-
-    # Highlight source node if provided
-    if src_node is not None:
-        nodes = nx.draw_networkx_nodes(G, pos, ax=ax, nodelist=[src_node], node_color="g", edgecolors='black')
-
-    # Draw edge labels
-    nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=labels, ax=ax, font_size=15)
-
-    # Print shortest path using Dijkstra
+    # set with_labels to False if use node labels
+    nx.draw(G, pos=pos, with_labels=True, font_size=15)
+    nodes = nx.draw_networkx_nodes(G, pos, node_color="y")
+    nodes.set_edgecolor('black')
+    nodes = nx.draw_networkx_nodes(
+        G, pos, nodelist=[0, src_node] if src_node else [0], node_color="g")
+    nodes.set_edgecolor('black')
+    nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=labels, font_size=15)
     if print_shortest_path:
-        print("The shortest path (dijkstra) is shown below: ")
+        print("The shortest path (dijkstra) is showed below: ")
         added_edges = []
-        num_nodes = G.number_of_nodes()  # Use the number of nodes from the graph
         for node in range(1, num_nodes):
-            shortest_path = nx.dijkstra_path(G, node, 0)  # Shortest path from node to 0
-            print(f"{'->'.join([str(v) for v in shortest_path])}: {nx.dijkstra_path_length(G, node, 0)}")
+            shortest_path = nx.dijkstra_path(G, node, 0)  # [1,0]
+            print("{}: {}".format("->".join([str(v) for v in shortest_path]),
+                                  nx.dijkstra_path_length(G, node, 0)))
             added_edges += list(zip(shortest_path, shortest_path[1:]))
-
-    # Draw the added edges (if any)
     if added_edges is not None:
-        nx.draw_networkx_edges(G, pos, ax=ax, edgelist=added_edges, edge_color='r', width=2)
+        nx.draw_networkx_edges(
+            G, pos, edgelist=added_edges, edge_color='r', width=2)
 
-    # Save figure if filename is provided
     if filename is not None:
         plt.savefig(filename)
 
-    # Pause or show the plot
     if pause:
         plt.pause(0.3)
     else:
         plt.show()
 
-    # Return the image for video generation
+    # return img for video generation
     img = None
-    img = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
     w, h = fig.canvas.get_width_height()
     img = img.reshape((h, w, 3))
     return img
+
+# def plot_graph(adjacency_matrix, figure_title=None, print_shortest_path=False, src_node=None, filename=None,
+#                added_edges=None, pause=False):
+#     adjacency_matrix = np.array(adjacency_matrix)
+#     rows, cols = np.where(adjacency_matrix > 0)
+#     edges = list(zip(rows.tolist(), cols.tolist()))
+#     values = [adjacency_matrix[i][j] for i, j in edges]
+#     weighted_edges = [(e[0], e[1], values[idx]) for idx, e in enumerate(edges)]
+#
+#     plt.cla()
+#
+#     # Create a new figure and axis object
+#     fig, ax = plt.subplots(figsize=(8, 6))  # You can adjust the figure size if needed
+#
+#     # Title setup
+#     if figure_title is None:
+#         ax.set_title("The shortest path for every node to the target")
+#     else:
+#         ax.set_title(figure_title)
+#
+#     # Create graph
+#     G = nx.Graph()
+#     G.add_weighted_edges_from(weighted_edges)
+#
+#     # Plot the graph
+#     labels = nx.get_edge_attributes(G, 'weight')
+#     pos = nx.kamada_kawai_layout(G)
+#
+#     # Draw nodes and edges
+#     nx.draw(G, pos=pos, ax=ax, with_labels=True, font_size=15)
+#     nodes = nx.draw_networkx_nodes(G, pos, ax=ax, node_color="y", edgecolors='black')
+#
+#     # Highlight source node if provided
+#     if src_node is not None:
+#         nodes = nx.draw_networkx_nodes(G, pos, ax=ax, nodelist=[src_node], node_color="g", edgecolors='black')
+#
+#     # Draw edge labels
+#     nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=labels, ax=ax, font_size=15)
+#
+#     # Print shortest path using Dijkstra
+#     if print_shortest_path:
+#         print("The shortest path (dijkstra) is shown below: ")
+#         added_edges = []
+#         num_nodes = G.number_of_nodes()  # Use the number of nodes from the graph
+#         for node in range(1, num_nodes):
+#             shortest_path = nx.dijkstra_path(G, node, 0)  # Shortest path from node to 0
+#             print(f"{'->'.join([str(v) for v in shortest_path])}: {nx.dijkstra_path_length(G, node, 0)}")
+#             added_edges += list(zip(shortest_path, shortest_path[1:]))
+#
+#     # Draw the added edges (if any)
+#     if added_edges is not None:
+#         nx.draw_networkx_edges(G, pos, ax=ax, edgelist=added_edges, edge_color='r', width=2)
+#
+#     # Save figure if filename is provided
+#     if filename is not None:
+#         plt.savefig(filename)
+#
+#     # Pause or show the plot
+#     if pause:
+#         plt.pause(0.3)
+#     else:
+#         plt.show()
+#
+#     # Return the image for video generation
+#     img = None
+#     img = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+#     w, h = fig.canvas.get_width_height()
+#     img = img.reshape((h, w, 3))
+#     return img
 
 
 def get_best_actions(D, states):
